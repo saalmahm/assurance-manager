@@ -8,18 +8,33 @@ import java.util.List;
 public class ClientDAO {
 
     public void addClient(Client client) {
-        String sql = "INSERT INTO client (personne_id, conseiller_id) VALUES (?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sqlPersonne = "INSERT INTO personne (nom, prenom, email) VALUES (?, ?, ?) RETURNING id";
+        String sqlClient = "INSERT INTO client (personne_id, conseiller_id) VALUES (?, ?)";
 
-            stmt.setInt(1, client.getId()); // ici id vient de la table personne
-            if (client.getConseillerId() != 0) {
-                stmt.setInt(2, client.getConseillerId());
-            } else {
-                stmt.setNull(2, java.sql.Types.INTEGER);
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // Insérer la personne
+            PreparedStatement stmtPersonne = conn.prepareStatement(sqlPersonne);
+            stmtPersonne.setString(1, client.getNom());
+            stmtPersonne.setString(2, client.getPrenom());
+            stmtPersonne.setString(3, client.getEmail());
+
+            ResultSet rs = stmtPersonne.executeQuery();
+            if (rs.next()) {
+                int personneId = rs.getInt(1);
+                client.setId(personneId); // mettre à jour l'id du client
             }
 
-            stmt.executeUpdate();
+            // Insérer le client avec personne_id et conseiller_id
+            PreparedStatement stmtClient = conn.prepareStatement(sqlClient);
+            stmtClient.setInt(1, client.getId());
+            if (client.getConseiller() != null) {
+                stmtClient.setInt(2, client.getConseillerId());
+            } else {
+                stmtClient.setNull(2, java.sql.Types.INTEGER);
+            }
+            stmtClient.executeUpdate();
+
+            System.out.println("Client ajouté avec succès !");
         } catch (SQLException e) {
             e.printStackTrace();
         }
