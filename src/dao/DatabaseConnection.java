@@ -5,21 +5,19 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    // URL de connexion JDBC
-    private static final String URL = "jdbc:postgresql://localhost:5432/assurance-manager";
+    private static final String URL = "jdbc:postgresql://localhost:5432/assurance_manager";
     private static final String USER = "postgres";
     private static final String PASSWORD = "salmahm";
 
-    public static void main(String[] args) {
+    // Méthode utilitaire pour récupérer une connexion
+    public static Connection getConnection() {
         try {
-            // Établir la connexion
             Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println(" Connexion réussie à PostgreSQL !");
-
-            // Fermer la connexion
-            conn.close();
+            return conn;
         } catch (SQLException e) {
-            System.out.println(" Erreur de connexion : " + e.getMessage());
+            System.out.println(" Erreur de connexion à la base : " + e.getMessage());
+            return null;
         }
     }
 }
