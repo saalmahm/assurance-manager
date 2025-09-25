@@ -26,4 +26,17 @@ public class ClientService {
                 .sorted((c1, c2) -> c1.getNom().compareToIgnoreCase(c2.getNom()))
                 .collect(Collectors.toList());
     }
+
+    // 🔹 Supprimer un client
+    public boolean supprimerClientParId(int id) {
+        return clientDAO.deleteClientById(id);
+    }
+
+    // 🔹 Récupérer clients d’un conseiller
+    public List<Client> getClientsByConseillerId(int conseillerId) {
+        return clientDAO.getClientsByConseillerId(conseillerId)
+                .stream()
+                .sorted((c1, c2) -> c1.getNom().compareToIgnoreCase(c2.getNom()))
+                .collect(Collectors.toList());
+    }
 }
