@@ -21,10 +21,10 @@ public class ClientDAO {
             ResultSet rs = stmtPersonne.executeQuery();
             if (rs.next()) {
                 int personneId = rs.getInt(1);
-                client.setId(personneId); // mettre à jour l'id du client
+                client.setId(personneId);
             }
 
-            // Insérer le client avec personne_id et conseiller_id
+            // Insérer le client
             PreparedStatement stmtClient = conn.prepareStatement(sqlClient);
             stmtClient.setInt(1, client.getId());
             if (client.getConseiller() != null) {
@@ -63,30 +63,31 @@ public class ClientDAO {
         return clients;
     }
 
-    public void supprimerClientParId(int id) {
+    // 🔹 Supprimer un client par ID
+    public boolean deleteClientById(int id) {
         String sql = "DELETE FROM client WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            int affected = stmt.executeUpdate();
-            if (affected > 0) {
-                System.out.println("Client supprimé avec succès !");
-            } else {
-                System.out.println("Aucun client trouvé avec cet ID.");
-            }
+            int rows = stmt.executeUpdate();
+            return rows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
+    // 🔹 Récupérer clients d’un conseiller
     public List<Client> getClientsByConseillerId(int conseillerId) {
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT c.id, p.nom, p.prenom, p.email, c.conseiller_id " +
-                "FROM client c JOIN personne p ON c.personne_id = p.id WHERE c.conseiller_id = ?";
+                "FROM client c JOIN personne p ON c.personne_id = p.id " +
+                "WHERE c.conseiller_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, conseillerId);
             ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
                 Client client = new Client();
                 client.setId(rs.getInt("id"));
