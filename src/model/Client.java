@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Client extends Personne {
-    private int id;                       // id du client
+    private int id;
     private Conseiller conseiller;        // lien avec le conseiller
-    private Map<Integer, Contrat> contrats; // contrats rattachés au client
+    private Map<Integer, Contrat> contrats; // contrats du client
 
     // Constructeur vide
     public Client() {

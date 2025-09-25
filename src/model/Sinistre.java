@@ -3,7 +3,6 @@ package model;
 import java.time.LocalDateTime;
 
 public class Sinistre {
-    // Fix: Remove 'package' keyword and use proper field declaration
     private String description;
     private LocalDateTime dateOccurrence;
     private String lieu;

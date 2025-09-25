@@ -13,7 +13,7 @@ public class DatabaseConnection {
     public static Connection getConnection() {
         try {
             Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println(" Connexion réussie à PostgreSQL !");
+            // System.out.println(" Connexion réussie à PostgreSQL !");
             return conn;
         } catch (SQLException e) {
             System.out.println(" Erreur de connexion à la base : " + e.getMessage());
