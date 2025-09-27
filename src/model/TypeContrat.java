@@ -1,7 +1,5 @@
 package model;
 
 public enum TypeContrat {
-    AUTOMOBILE,
-    MAISON,
-    MALADIE
+    AUTOMOBILE, MAISON, MALADIE
 }
