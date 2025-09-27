@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class Sinistre {
     private String description;
+    private TypeSinistre typeSinistre;
     private LocalDateTime dateOccurrence;
     private String lieu;
     private double montantDommage;
@@ -14,7 +15,7 @@ public class Sinistre {
     public Sinistre() {
     }
 
-    public Sinistre(String numeroSinistre, String description, LocalDateTime dateOccurrence,
+    public Sinistre(String numeroSinistre, TypeSinistre typeSinistre ,String description, LocalDateTime dateOccurrence,
                     String lieu, double montantDommage, String statut) {
         this.numeroSinistre = numeroSinistre;
         this.description = description;
