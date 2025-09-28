@@ -1,17 +1,17 @@
 package model;
 
-public abstract class Personne {
-    protected String nom;
-    protected String prenom;
-    protected String email;
+public abstract class Person {
+    private String nom;
+    private String prenom;
+    private String email;
 
-    public Personne() {}
-    public Personne(String nom, String prenom, String email) {
+    public Person(String nom, String prenom, String email) {
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
     }
 
+    // Getters et Setters
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
     public String getPrenom() { return prenom; }

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/assurance_manager.iml" filepath="$PROJECT_DIR$/assurance_manager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AssuranceApp.iml" filepath="$PROJECT_DIR$/AssuranceApp.iml" />
     </modules>
   </component>
 </project>
