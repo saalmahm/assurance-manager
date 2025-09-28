@@ -40,7 +40,7 @@
 - **PostgreSQL** – Base de données relationnelle
 - **JDBC** – Connecteur base de données
 - **Bibliothèques locales** – Les dépendances sont dans `src/lib/` (par ex. driver PostgreSQL)
-- **Architecture MVC** – Modèle, Vue, Contrôleur
+- **Architecture Modèle-Service-Vue** – Séparation entre modèles, services métier et interface utilisateur
 
 
 ## 📁 Structure du Projet
