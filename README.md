@@ -36,11 +36,12 @@
 
 ## 🛠️ Technologies Utilisées
 
-- **Java 8+** - Langage de programmation principal
-- **PostgreSQL** - Base de données relationnelle
-- **JDBC** - Connecteur base de données
-- **Maven** - Gestionnaire de dépendances (optionnel)
-- **Architecture MVC** - Modèle, Vue, Contrôleur
+- **Java 8+** – Langage de programmation principal
+- **PostgreSQL** – Base de données relationnelle
+- **JDBC** – Connecteur base de données
+- **Bibliothèques locales** – Les dépendances sont dans `src/lib/` (par ex. driver PostgreSQL)
+- **Architecture MVC** – Modèle, Vue, Contrôleur
+
 
 ## 📁 Structure du Projet
 
@@ -61,7 +62,7 @@ assurance-manager/
 │   │   ├── Contrat.java
 │   │   ├── Sinistre.java
 │   │   ├── TypeContrat.java
-│   │   └── StatutSinistre.java
+│   │   └── TypeSinistre.java
 │   │
 │   ├── service/                # Couche métier
 │   │   ├── ConseillerService.java
@@ -75,15 +76,18 @@ assurance-manager/
 │   │   ├── ContratView.java
 │   │   └── SinistreView.java
 │   │
-│   └── Main.java              # Point d'entrée de l'application
+│   ├── lib/                    # Bibliothèques (si sans Maven)
+│   │   └── postgresql-43.7.8.jar
+│   │
+│   └── Main.java               # Point d'entrée de l'application
 │
-├── sql/
-│   └── database_setup.sql     # Scripts de création de la BDD
+├── SchemaSQL/                  # Scripts SQL
+│   └── assurance-manager.sql
 │
-├── lib/                       # Bibliothèques (si sans Maven)
-│   └── postgresql-xx.x.x.jar
+├── Assurance.jar               # Fichier JAR exécutable
 │
 └── README.md
+
 ```
 
 ## ⚙️ Installation et Configuration
@@ -107,111 +111,36 @@ cd assurance-manager
 
 ```sql
 -- Se connecter à PostgreSQL et créer la base
-CREATE DATABASE assurance_db;
-\c assurance_db;
+CREATE DATABASE assurance-manager;
+\c assurance-manager;
 ```
 
 #### Exécuter le script de création des tables :
 
-```sql
--- Créer le type énuméré pour les contrats
-CREATE TYPE type_contrat AS ENUM ('AUTOMOBILE', 'MAISON', 'MALADIE');
-
--- Créer le type énuméré pour les statuts de sinistre
-CREATE TYPE statut_sinistre AS ENUM ('EN_ATTENTE', 'EN_COURS', 'ACCEPTE', 'REFUSE');
-
--- Table des conseillers
-CREATE TABLE conseillers (
-    id SERIAL PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL,
-    telephone VARCHAR(20)
-);
-
--- Table des clients
-CREATE TABLE clients (
-    id SERIAL PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL,
-    telephone VARCHAR(20),
-    adresse VARCHAR(255),
-    conseiller_id INTEGER,
-    FOREIGN KEY (conseiller_id) REFERENCES conseillers(id)
-);
-
--- Table des contrats
-CREATE TABLE contrats (
-    id SERIAL PRIMARY KEY,
-    type_contrat type_contrat NOT NULL,
-    date_debut DATE NOT NULL,
-    date_fin DATE NOT NULL,
-    client_id INTEGER NOT NULL,
-    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
-);
-
--- Table des sinistres
-CREATE TABLE sinistres (
-    id SERIAL PRIMARY KEY,
-    description TEXT NOT NULL,
-    date_sinistre DATE NOT NULL,
-    statut statut_sinistre DEFAULT 'EN_ATTENTE',
-    contrat_id INTEGER NOT NULL,
-    FOREIGN KEY (contrat_id) REFERENCES contrats(id) ON DELETE CASCADE
-);
-```
+    1-Ouvre pgAdmin
+    
+    2-Clique droit sur ta base assurance-manager → Restore / Import
+    
+    3-Sélectionne le fichier assurance-manager.sql
+    
+    4-Exécute → les tables et types seront créés automatiquement.
 
 ### 3. Configuration de la Connexion
 
 Modifiez le fichier `DatabaseConnection.java` avec vos paramètres :
 
 ```java
-private static final String URL = "jdbc:postgresql://localhost:5432/assurance_db";
+private static final String URL = "jdbc:postgresql://localhost:5432/assurance-manager";
 private static final String USERNAME = "votre_nom_utilisateur";
 private static final String PASSWORD = "votre_mot_de_passe";
 ```
 
 ### 4. Ajouter le Driver PostgreSQL
 
-#### Option A : Avec Maven
-Ajoutez dans votre `pom.xml` :
-
-```xml
-<dependency>
-    <groupId>org.postgresql</groupId>
-    <artifactId>postgresql</artifactId>
-    <version>42.7.0</version>
-</dependency>
-```
-
-#### Option B : Sans Maven
 1. Téléchargez le driver JDBC PostgreSQL depuis [ici](https://jdbc.postgresql.org/download/)
 2. Placez le fichier `.jar` dans le dossier `lib/`
 3. Ajoutez-le au classpath de votre IDE
 
-## 🚀 Exécution de l'Application
-
-### Méthode 1 : Depuis l'IDE
-1. Ouvrez le projet dans votre IDE
-2. Configurez le classpath avec le driver PostgreSQL
-3. Exécutez la classe `Main.java`
-
-### Méthode 2 : En ligne de commande
-
-```bash
-# Compilation
-javac -cp "lib/postgresql-42.7.0.jar:." src/**/*.java
-
-# Exécution
-java -cp "lib/postgresql-42.7.0.jar:src" Main
-```
-
-### Méthode 3 : Avec Maven
-
-```bash
-mvn clean compile exec:java -Dexec.mainClass="Main"
-```
 
 ## 📱 Utilisation de l'Application
 
@@ -234,26 +163,6 @@ Votre choix:
 3. **Créer un contrat** → Menu 3 → Option 1 (associer au client)
 4. **Déclarer un sinistre** → Menu 4 → Option 1 (associer au contrat)
 
-## 🔧 Dépannage
-
-### Erreurs Communes
-
-#### 1. "ClassNotFoundException: org.postgresql.Driver"
-- ✅ Vérifiez que le driver PostgreSQL est dans le classpath
-- ✅ Téléchargez la dernière version du driver
-
-#### 2. "Connection refused"
-- ✅ Vérifiez que PostgreSQL est démarré
-- ✅ Vérifiez l'URL, le port (5432 par défaut)
-- ✅ Vérifiez les identifiants de connexion
-
-#### 3. "Relation does not exist"
-- ✅ Exécutez les scripts SQL de création des tables
-- ✅ Vérifiez que vous êtes connecté à la bonne base
-
-#### 4. "Type does not exist"
-- ✅ Créez les types énumérés (`type_contrat`, `statut_sinistre`)
-
 ## 📊 Modèle de Données
 
 ```
@@ -264,29 +173,11 @@ Conseiller (1) ←→ (N) Client (1) ←→ (N) Contrat (1) ←→ (N) Sinistre
 - Un **client** peut avoir plusieurs **contrats**
 - Un **contrat** peut avoir plusieurs **sinistres**
 
-## 🤝 Contribution
 
-1. Forkez le projet
-2. Créez une branche pour votre fonctionnalité
-3. Committez vos changements
-4. Poussez vers la branche
-5. Ouvrez une Pull Request
-
-## 📝 Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ## 👨‍💻 Auteur
 
-**Saal Mahm** - [GitHub](https://github.com/saalmahm)
+**Saalma hm** - [GitHub](https://github.com/saalmahm)
 
-## 📞 Support
-
-Si vous rencontrez des problèmes :
-1. Vérifiez la section **Dépannage**
-2. Consultez les **Issues** du projet
-3. Créez une nouvelle **Issue** avec une description détaillée
-
----
 
 ⭐ N'oubliez pas de donner une étoile si ce projet vous a été utile !
